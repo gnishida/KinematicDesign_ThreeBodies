@@ -1,0 +1,43 @@
+<design version="1.0" author="Gen Nishida" date="05/20/2018">
+    <moving_body>
+        <shape type="rectangle">
+            <pose x="-18.71246344790033" y="14.55127346598986" theta="0"/>
+            <params width="16.74475861870368" height="-1.92152967755616"/>
+        </shape>
+        <shape type="rectangle">
+            <pose x="15.77660731750285" y="10.46896403774472" theta="-0.7812257258581661"/>
+            <params width="16.74475861870368" height="-1.92152967755616"/>
+        </shape>
+        <linkage_region type="polygon">
+            <pose x="-18.80396486111729" y="15.64929042459338" theta="0"/>
+            <point x="0" y="0"/>
+            <point x="19.85580666808032" y="0.366005652867841"/>
+            <point x="35.77705256783136" y="-3.934560768329279"/>
+            <point x="48.67875183142272" y="-15.28073600723232"/>
+            <point x="44.10368117057472" y="-20.31331373416512"/>
+            <point x="37.14957376608577" y="-19.76430525486336"/>
+            <point x="18.66628829625984" y="-7.04560881770592"/>
+            <point x="-0.183002826433917" y="-5.4900847930176"/>
+        </linkage_region>
+    </moving_body>
+    <moving_body>
+        <shape type="rectangle">
+            <pose x="-0.2687869033858943" y="14.29534442327496" theta="-0.2262331561228903"/>
+            <params width="14.27422046184576" height="-2.104532503990081"/>
+        </shape>
+        <shape type="rectangle">
+            <pose x="22.93349864057451" y="8.753158778595839" theta="-0.8036475556152162"/>
+            <params width="14.27422046184576" height="-2.104532503990081"/>
+        </shape>
+    </moving_body>
+    <moving_body>
+        <shape type="rectangle">
+            <pose x="16.09105032148603" y="10.08564211916768" theta="-0.7279579130192885"/>
+            <params width="13.2677049164592" height="-2.196033917207041"/>
+        </shape>
+        <shape type="rectangle">
+            <pose x="29.48549652201194" y="7.731819113947015" theta="-0.8024575980096972"/>
+            <params width="13.2677049164592" height="-2.196033917207041"/>
+        </shape>
+    </moving_body>
+</design>

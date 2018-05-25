@@ -1,0 +1,42 @@
+<design author="Gen Nishida" date="05/20/2018" version="1.0">
+    <fixed_body type="polygon">
+        <pose x="-22.65119770974748" theta="0" y="17.38578771581495"/>
+        <point x="0" y="0"/>
+        <point x="-14.60406168128456" y="-18.77665073308015"/>
+        <point x="-16.69035620718236" y="-22.05511355949097"/>
+        <point x="53.74692088146223" y="-22.05511355949097"/>
+        <point x="54.44235239009483" y="-35.86439637376684"/>
+        <point x="-28.78582880845699" y="-36.07810920825524"/>
+        <point x="-25.07387844116388" y="-16.98807874789069"/>
+    </fixed_body>
+    <moving_body>
+        <shape type="rectangle">
+            <pose x="-20.50071589866988" theta="0" y="17.034957425392"/>
+            <params height="-1.92152967755616" width="16.74475861870368"/>
+        </shape>
+        <shape type="rectangle">
+            <pose x="7.483503771895331" theta="-0.8621304174730053" y="13.35689746120762"/>
+            <params height="-1.92152967755616" width="16.74475861870368"/>
+        </shape>
+    </moving_body>
+    <moving_body>
+        <shape type="rectangle">
+            <pose x="0.0698028117011924" theta="-0.3951828545386238" y="17.17601845279181"/>
+            <params height="-2.104532503990081" width="14.27422046184576"/>
+        </shape>
+        <shape type="rectangle">
+            <pose x="15.58079305923557" theta="-0.9642580515787559" y="12.32912067072711"/>
+            <params height="-2.104532503990081" width="14.27422046184576"/>
+        </shape>
+    </moving_body>
+    <moving_body>
+        <shape type="rectangle">
+            <pose x="16.2897450382382" theta="-0.7279579130192885" y="10.08564211916768"/>
+            <params height="-2.196033917207041" width="13.2677049164592"/>
+        </shape>
+        <shape type="rectangle">
+            <pose x="22.70514414264493" theta="-1.017187214359784" y="12.19404718267552"/>
+            <params height="-2.196033917207041" width="13.2677049164592"/>
+        </shape>
+    </moving_body>
+</design>
