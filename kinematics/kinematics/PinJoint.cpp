@@ -71,7 +71,7 @@ namespace kinematics {
 		for (int i = 0; i < links.size(); ++i) {
 			if (links[i]->isDetermined()) {
 				// calculate the position of this joint based on the joints whose position has already been determined.
-				pos = links[i]->transformByDeterminedJoints(id);
+				next_pos = links[i]->transformByDeterminedJoints(id);
 				determined = true;
 				return true;
 			}
@@ -80,17 +80,25 @@ namespace kinematics {
 		// If two of the links have at least one joint with its position determined,
 		// then use them to determine the position of this joint.
 		std::vector<glm::dvec2> positions;
+		std::vector<glm::dvec2> next_positions;
 		std::vector<double> lengths;
 		for (int i = 0; i < links.size(); ++i) {
 			for (int j = 0; j < links[i]->joints.size(); ++j) {
 				if (links[i]->joints[j]->determined) {
 					positions.push_back(links[i]->joints[j]->pos);
+					next_positions.push_back(links[i]->joints[j]->next_pos);
 					lengths.push_back(links[i]->getLength(links[i]->joints[j]->id, id));
 				}
 			}
 		}
 		if (positions.size() == 2) {
-			pos = circleCircleIntersection(positions[0], lengths[0], positions[1], lengths[1], pos);
+			double sign = crossProduct(positions[1] - positions[0], pos - positions[1]);
+			if (sign < 0) {
+				next_pos = circleCircleIntersection(next_positions[0], lengths[0], next_positions[1], lengths[1]);
+			}
+			else {
+				next_pos = circleCircleIntersection(next_positions[1], lengths[1], next_positions[0], lengths[0]);
+			}
 			determined = true;
 			return true;
 		}
@@ -113,7 +121,7 @@ namespace kinematics {
 			for (int i = 0; i < links.size(); ++i) {
 				for (int j = 0; j < links[i]->joints.size(); ++j) {
 					if (links[i]->joints[j]->determined) {
-						positions.push_back(links[i]->joints[j]->pos);
+						positions.push_back(links[i]->joints[j]->next_pos);
 						lengths.push_back(links[i]->getLength(links[i]->joints[j]->id, id));
 						link1 = i;
 						i = links.size();
@@ -139,7 +147,7 @@ namespace kinematics {
 							if (links[i]->joints[j]->links[k]->joints[l]->id == links[i]->joints[j]->id) continue;
 
 							if (links[i]->joints[j]->links[k]->joints[l]->determined) {
-								positions.push_back(links[i]->joints[j]->links[k]->joints[l]->pos);
+								positions.push_back(links[i]->joints[j]->links[k]->joints[l]->next_pos);
 								lengths.push_back(links[i]->joints[j]->links[k]->getLength(links[i]->joints[j]->id, links[i]->joints[j]->links[k]->joints[l]->id));
 								lengths2.push_back(links[i]->getLength(links[i]->joints[j]->id, id));
 								pts_indices.push_back(links[i]->joints[j]->id);
@@ -162,7 +170,7 @@ namespace kinematics {
 			if (lengths2.size() == 2) {
 				lengths2.push_back(glm::length(links[link2]->original_shape[pts_indices[0]] - links[link2]->original_shape[pts_indices[1]]));
 
-				pos = kinematics::threeLengths(positions[0], lengths[0], positions[1], lengths[1], positions[2], lengths[2], lengths2[0], lengths2[1], lengths2[2], pos, prev_positions[0], prev_positions[1]);
+				next_pos = kinematics::threeLengths(positions[0], lengths[0], positions[1], lengths[1], positions[2], lengths[2], lengths2[0], lengths2[1], lengths2[2], pos, prev_positions[0], prev_positions[1]);
 				determined = true;
 				return true;
 			}

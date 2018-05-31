@@ -19,6 +19,7 @@ namespace kinematics {
 		int type;
 		bool ground;
 		glm::dvec2 pos;
+		glm::dvec2 next_pos;
 		std::vector<boost::shared_ptr<Link>> links;
 		bool determined;
 		int z;

@@ -63,6 +63,10 @@ namespace kinematics {
 			}
 		}
 
+		for (int i = 0; i < diagram.joints.size(); i++) {
+			diagram.joints[i]->pos = diagram.joints[i]->next_pos;
+		}
+
 		if (collision_check == 1 || collision_check == 2) {
 			if (diagram.isCollided(collision_check == 2)) throw "collision is detected.";
 		}
@@ -92,6 +96,7 @@ namespace kinematics {
 		for (auto it = diagram.joints.begin(); it != diagram.joints.end(); ++it) {
 			if (diagram.joints[it.key()]->ground) {
 				diagram.joints[it.key()]->determined = true;
+				diagram.joints[it.key()]->next_pos = diagram.joints[it.key()]->pos;
 			}
 			else {
 				diagram.joints[it.key()]->determined = false;
@@ -109,7 +114,7 @@ namespace kinematics {
 
 		// check the crank angle
 		if (motion_range_restricted && min_angle < max_angle) {
-			glm::dvec2 a = diagram.joints[2]->pos - diagram.joints[0]->pos;
+			glm::dvec2 a = diagram.joints[2]->next_pos - diagram.joints[0]->next_pos;
 			double angle = std::atan2(a.y, a.x);
 			if (angle < min_angle) angle += M_PI * 2;
 			else if (angle > max_angle) angle -= M_PI * 2;

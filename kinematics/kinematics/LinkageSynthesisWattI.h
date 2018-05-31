@@ -31,6 +31,8 @@ namespace kinematics {
 		bool checkHardConstraints(std::vector<glm::dvec2>& points, const std::vector<std::vector<glm::dmat3x3>>& poses, const std::vector<glm::dvec2>& linkage_region_pts, const std::vector<glm::dvec2>& linkage_avoidance_pts, const std::vector<Object25D>& moving_bodies, std::vector<std::vector<int>>& zorder);
 		bool checkCollision(const std::vector<std::vector<glm::dmat3x3>>& poses, const std::vector<glm::dvec2>& points, const std::vector<Object25D>& fixed_bodies, const std::vector<Object25D>& moving_bodies);
 		Kinematics recordCollisionForConnectors(const std::vector<std::vector<glm::dmat3x3>>& poses, const std::vector<glm::dvec2>& points, const std::vector<Object25D> fixed_bodies, const std::vector<Object25D>& moving_bodies);
+		bool withinLinkageRegion(std::vector<glm::dvec2>& points, const std::vector<std::vector<glm::dmat3x3>>& poses, const std::vector<Object25D>& fixed_bodies, const std::vector<Object25D>& moving_bodies, const std::vector<glm::dvec2>& linkage_region_pts);
+		double check(const std::vector<std::vector<glm::dmat3x3>>& poses, const std::vector<glm::dvec2>& points);
 
 		void generate3DGeometry(const Kinematics& kinematics, std::vector<Vertex>& vertices);
 		void generateJointGeometry(const glm::dvec2& pos, int bottom_z, int top_z, const glm::vec4& color, std::vector<Vertex>& vertices);

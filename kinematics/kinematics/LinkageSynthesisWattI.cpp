@@ -48,7 +48,8 @@ namespace kinematics {
 			for (int i = 0; i < poses.size(); i++) {
 				double position_error = 0.0;
 				double orientation_error = 0.0;
-				perturbed_poses[i] = perturbPoses(poses[i], sigmas, position_error, orientation_error);
+				if (i > 0) perturbed_poses[i] = poses[i];
+				else perturbed_poses[i] = perturbPoses(poses[i], sigmas, position_error, orientation_error);
 			}
 
 			// sample joints within the linkage region
@@ -87,6 +88,57 @@ namespace kinematics {
 			points[9] = glm::dvec2(-18.248, 23.0335);
 			*/
 
+			// DEBUG
+			/*
+			points[0] = glm::dvec2(19.9692, 16.5675);
+			points[1] = glm::dvec2(-15.147, 32.0749);
+			points[2] = glm::dvec2(-17.2181, 31.7293);
+			points[3] = glm::dvec2(-15.7892, 34.0386);
+			points[4] = glm::dvec2(-2.12206, 21.6751);
+			points[5] = glm::dvec2(-27.9931, 25.9954);
+			points[6] = glm::dvec2(-39.0803, 23.6992);
+			points[7] = glm::dvec2(-40.4054, 19.0504);
+			points[8] = glm::dvec2(-26.695, 29.3543);
+			points[9] = glm::dvec2(-34.7893, 18.2074);
+			*/
+
+			if (iter == 0) {
+				points[0] = glm::dvec2(0.142176, 23.847);
+				points[1] = glm::dvec2(-10.8956, 29.4436);
+				points[2] = glm::dvec2(-18.7741, 36.5068);
+				points[3] = glm::dvec2(-19.6119, 35.8157);
+				points[4] = glm::dvec2(-22.9877, 34.4472);
+				points[5] = glm::dvec2(-23.1734, 36.2808);
+				points[6] = glm::dvec2(-22.463, 33.0219);
+				points[7] = glm::dvec2(-43.9613, 21.4259);
+				points[8] = glm::dvec2(-33.1191, 19.5);
+				points[9] = glm::dvec2(-41.7158, 18.8416);
+			}
+			else if (iter == 1) {
+				points[0] = glm::dvec2(-5.4601, 23.8959);
+				points[1] = glm::dvec2(-19.8099, 31.3595);
+				points[2] = glm::dvec2(-4.17241, 32.8602);
+				points[3] = glm::dvec2(-20.7661, 32.8616);
+				points[4] = glm::dvec2(-21.665, 37.3293);
+				points[5] = glm::dvec2(-21.324, 32.9108);
+				points[6] = glm::dvec2(-23.5956, 28.9831);
+				points[7] = glm::dvec2(-41.9777, 17.8371);
+				points[8] = glm::dvec2(-47.4635, 21.2289);
+				points[9] = glm::dvec2(-42.995, 22.6045);
+			}
+			else if (iter == 2) {
+				points[0] = glm::dvec2(-22.8457, 28.5586);
+				points[1] = glm::dvec2(-20.1669, 30.0397);
+				points[2] = glm::dvec2(-26.4386, 30.836);
+				points[3] = glm::dvec2(-22.7454, 32.3241);
+				points[4] = glm::dvec2(-20.2619, 34.2068);
+				points[5] = glm::dvec2(-21.6564, 33.0974);
+				points[6] = glm::dvec2(-27.1086, 28.7567);
+				points[7] = glm::dvec2(-42.9865, 19.708);
+				points[8] = glm::dvec2(-45.111, 20.5705);
+				points[9] = glm::dvec2(-42.9443, 23.4227);
+			}
+
 			if (!optimizeCandidate(perturbed_poses, linkage_region_pts, bbox, points)) continue;
 
 			// check hard constraints
@@ -108,12 +160,10 @@ namespace kinematics {
 		if (!optimizeLink(poses, linkage_region_pts, bbox, points)) return false;
 		//if (check(poses, points) > 1.0) return false;
 
-		/*
 		// Check if all the joints are within the linkage region
 		for (int i = 0; i < points.size(); i++) {
 			if (!withinPolygon(linkage_region_pts, points[i])) return false;
 		}
-		*/
 
 		return true;
 	}
@@ -159,7 +209,10 @@ namespace kinematics {
 	double LinkageSynthesisWattI::calculateCost(Solution& solution, const std::vector<Object25D>& moving_bodies, const cv::Mat& dist_map, const BBox& dist_map_bbox) {
 		double dist = 0;
 		for (int i = 0; i < solution.points.size(); i++) {
-			dist += dist_map.at<double>(solution.points[i].y - dist_map_bbox.minPt.y, solution.points[i].x - dist_map_bbox.minPt.x);
+			int r = solution.points[i].y - dist_map_bbox.minPt.y;
+			int c = solution.points[i].x - dist_map_bbox.minPt.x;
+			if (r >= 0 && r < dist_map.rows && c >= 0 && c < dist_map.cols) dist += dist_map.at<double>(r, c);
+			else dist += dist_map.rows + dist_map.cols;
 		}
 		//double tortuosity = tortuosityOfTrajectory(solution.poses, solution.points, moving_body);
 		std::vector<glm::dvec2> connected_pts;
@@ -530,11 +583,9 @@ namespace kinematics {
 		}
 
 		// calculte the range of motion
-		/*
 		std::pair<double, double> angle_range = checkRange(poses, points);
 		kin.min_angle = angle_range.first;
 		kin.max_angle = angle_range.second;
-		*/
 
 		return kin;
 	}
@@ -557,6 +608,8 @@ namespace kinematics {
 		if (avoid_branch_defect && checkBranchDefect(poses, points)) return false;
 		if (checkCircuitDefect(poses, points)) return false;
 		//if (checkOrderDefect(poses, points)) return false;
+
+		if (!withinLinkageRegion(points, poses, fixed_bodies, moving_bodies, linkage_region_pts)) return false;
 
 		// collision check
 		if (checkCollision(poses, points, fixed_bodies, moving_bodies)) return false;
@@ -843,6 +896,120 @@ namespace kinematics {
 		}
 
 		return kinematics;
+	}
+
+	bool LinkageSynthesisWattI::withinLinkageRegion(std::vector<glm::dvec2>& points, const std::vector<std::vector<glm::dmat3x3>>& poses, const std::vector<Object25D>& fixed_bodies, const std::vector<Object25D>& moving_bodies, const std::vector<glm::dvec2>& linkage_region_pts) {
+		std::vector<glm::dvec2> connector_pts;
+		kinematics::Kinematics kinematics = constructKinematics(poses, points, {}, moving_bodies, true, fixed_bodies, connector_pts);
+		kinematics.diagram.initialize();
+
+		if (!withinPolygon(linkage_region_pts, (points[0] + points[2]) * 0.5)) return false;
+		if (!withinPolygon(linkage_region_pts, (points[1] + points[3]) * 0.5)) return false;
+		if (!withinPolygon(linkage_region_pts, (points[1] + points[4]) * 0.5)) return false;
+		if (!withinPolygon(linkage_region_pts, (points[2] + points[3]) * 0.5)) return false;
+		if (!withinPolygon(linkage_region_pts, (points[2] + points[5]) * 0.5)) return false;
+		if (!withinPolygon(linkage_region_pts, (points[3] + points[4]) * 0.5)) return false;
+		if (!withinPolygon(linkage_region_pts, (points[3] + points[5]) * 0.5)) return false;
+		if (!withinPolygon(linkage_region_pts, (points[4] + points[6]) * 0.5)) return false;
+		if (!withinPolygon(linkage_region_pts, (points[4] + points[7]) * 0.5)) return false;
+		if (!withinPolygon(linkage_region_pts, (points[5] + points[6]) * 0.5)) return false;
+		if (!withinPolygon(linkage_region_pts, (points[5] + points[8]) * 0.5)) return false;
+		if (!withinPolygon(linkage_region_pts, (points[6] + points[7]) * 0.5)) return false;
+		if (!withinPolygon(linkage_region_pts, (points[6] + points[8]) * 0.5)) return false;
+		if (!withinPolygon(linkage_region_pts, (points[7] + points[9]) * 0.5)) return false;
+		if (!withinPolygon(linkage_region_pts, (points[8] + points[9]) * 0.5)) return false;
+
+		if (!withinPolygon(linkage_region_pts, (points[0] + connector_pts[0]) * 0.5)) return false;
+		if (!withinPolygon(linkage_region_pts, (points[1] + connector_pts[1]) * 0.5)) return false;
+		if (!withinPolygon(linkage_region_pts, (points[2] + connector_pts[2]) * 0.5)) return false;
+		if (!withinPolygon(linkage_region_pts, (points[5] + connector_pts[3]) * 0.5)) return false;
+		if (!withinPolygon(linkage_region_pts, (points[4] + connector_pts[4]) * 0.5)) return false;
+		if (!withinPolygon(linkage_region_pts, (points[7] + connector_pts[5]) * 0.5)) return false;
+		if (!withinPolygon(linkage_region_pts, (points[8] + connector_pts[6]) * 0.5)) return false;
+		if (!withinPolygon(linkage_region_pts, (points[9] + connector_pts[7]) * 0.5)) return false;
+
+		return true;
+	}
+
+	/**
+	* Calculate the deviation of the link lengths across the poses.
+	*
+	* @param poses		poses
+	* @param points	the coordinates of the joints at the first pose
+	* @return			square root of the sum of the devation of the link lengths
+	*/
+	double LinkageSynthesisWattI::check(const std::vector<std::vector<glm::dmat3x3>>& poses, const std::vector<glm::dvec2>& points) {
+		glm::dvec2 P0 = points[0];
+		glm::dvec2 P1 = points[1];
+		glm::dvec2 P2 = points[2];
+		glm::dvec2 P3 = points[3];
+		glm::dvec2 P4 = points[4];
+		glm::dvec2 P5 = points[5];
+		glm::dvec2 P6 = points[6];
+		glm::dvec2 P7 = points[7];
+		glm::dvec2 P8 = points[8];
+		glm::dvec2 P9 = points[9];
+
+		glm::dvec2 p2(glm::inverse(poses[0][0]) * glm::dvec3(P2, 1));
+		glm::dvec2 p3(glm::inverse(poses[0][0]) * glm::dvec3(P3, 1));
+		glm::dvec2 p4(glm::inverse(poses[1][0]) * glm::dvec3(P4, 1));
+		glm::dvec2 p5(glm::inverse(poses[0][0]) * glm::dvec3(P5, 1));
+		glm::dvec2 p6(glm::inverse(poses[1][0]) * glm::dvec3(P6, 1));
+		glm::dvec2 p7(glm::inverse(poses[1][0]) * glm::dvec3(P7, 1));
+		glm::dvec2 p8(glm::inverse(poses[2][0]) * glm::dvec3(P8, 1));
+		glm::dvec2 p9(glm::inverse(poses[2][0]) * glm::dvec3(P9, 1));
+
+		std::vector<double> lengths;
+		lengths.push_back(glm::length(P2 - P0));
+		lengths.push_back(glm::length(P3 - P1));
+		lengths.push_back(glm::length(P3 - P2));
+		lengths.push_back(glm::length(P5 - P2));
+		lengths.push_back(glm::length(P5 - P3));
+		lengths.push_back(glm::length(P4 - P1));
+		lengths.push_back(glm::length(P4 - P3));
+		lengths.push_back(glm::length(P6 - P4));
+		lengths.push_back(glm::length(P6 - P5));
+		lengths.push_back(glm::length(P7 - P4));
+		lengths.push_back(glm::length(P7 - P6));
+		lengths.push_back(glm::length(P8 - P5));
+		lengths.push_back(glm::length(P8 - P6));
+		lengths.push_back(glm::length(P9 - P8));
+		lengths.push_back(glm::length(P9 - P7));
+
+		double ans = 0.0;
+		for (int i = 1; i < poses[0].size(); i++) {
+			glm::dvec2 P2b(poses[0][i] * glm::dvec3(p2, 1));
+			glm::dvec2 P3b(poses[0][i] * glm::dvec3(p3, 1));
+			glm::dvec2 P4b(poses[1][i] * glm::dvec3(p4, 1));
+			glm::dvec2 P5b(poses[0][i] * glm::dvec3(p5, 1));
+			glm::dvec2 P6b(poses[1][i] * glm::dvec3(p6, 1));
+			glm::dvec2 P7b(poses[1][i] * glm::dvec3(p7, 1));
+			glm::dvec2 P8b(poses[2][i] * glm::dvec3(p8, 1));
+			glm::dvec2 P9b(poses[2][i] * glm::dvec3(p9, 1));
+
+			std::vector<double> lengths2;
+			lengths2.push_back(glm::length(P2b - P0));
+			lengths2.push_back(glm::length(P3b - P1));
+			lengths2.push_back(glm::length(P3b - P2b));
+			lengths2.push_back(glm::length(P5b - P2b));
+			lengths2.push_back(glm::length(P5b - P3b));
+			lengths2.push_back(glm::length(P4b - P1));
+			lengths2.push_back(glm::length(P4b - P3b));
+			lengths2.push_back(glm::length(P6b - P4b));
+			lengths2.push_back(glm::length(P6b - P5b));
+			lengths2.push_back(glm::length(P7b - P4b));
+			lengths2.push_back(glm::length(P7b - P6b));
+			lengths2.push_back(glm::length(P8b - P5b));
+			lengths2.push_back(glm::length(P8b - P6b));
+			lengths2.push_back(glm::length(P9b - P8b));
+			lengths2.push_back(glm::length(P9b - P7b));
+
+			for (int i = 0; i < lengths.size(); i++) {
+				ans += (lengths[i] - lengths2[i]) * (lengths[i] - lengths2[i]);
+			}
+		}
+
+		return std::sqrt(ans);
 	}
 
 	void LinkageSynthesisWattI::generate3DGeometry(const Kinematics& kinematics, std::vector<Vertex>& vertices) {

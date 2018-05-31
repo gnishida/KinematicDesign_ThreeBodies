@@ -64,7 +64,7 @@ namespace kinematics {
 		std::vector<glm::dvec2> p;
 		for (int i = 0; i < joints.size(); ++i) {
 			if (joints[i]->determined) {
-				p.push_back(joints[i]->pos);
+				p.push_back(joints[i]->next_pos);
 				orig_p.push_back(original_shape[joints[i]->id]);
 			}
 		}

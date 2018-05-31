@@ -442,7 +442,6 @@ namespace kinematics {
 		}
 		else {
 			// find the closest point of a rigid body
-			glm::dvec2 closest_point;
 			double margin = options->body_margin;
 			while (true) {
 				try {
