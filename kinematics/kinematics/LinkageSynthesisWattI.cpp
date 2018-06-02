@@ -138,6 +138,18 @@ namespace kinematics {
 				points[8] = glm::dvec2(-45.111, 20.5705);
 				points[9] = glm::dvec2(-42.9443, 23.4227);
 			}
+			else if (iter == 3) {
+				points[0] = glm::dvec2(-4.35302, 28.3993);
+				points[1] = glm::dvec2(9.31541, 15.1628);
+				points[2] = glm::dvec2(-5.01492, 24.7024);
+				points[3] = glm::dvec2(-9.84199, 24.5667);
+				points[4] = glm::dvec2(-21.96, 33.3957);
+				points[5] = glm::dvec2(-22.1945, 33.5121);
+				points[6] = glm::dvec2(-25.7168, 27.2865);
+				points[7] = glm::dvec2(-44.4038, 20.7146);
+				points[8] = glm::dvec2(-46.1583, 21.514);
+				points[9] = glm::dvec2(-42.3571, 23.5452);
+			}
 
 			if (!optimizeCandidate(perturbed_poses, linkage_region_pts, bbox, points)) continue;
 
@@ -1049,7 +1061,10 @@ namespace kinematics {
 		// generate geometry of joint [3], which is between two ternary links
 		generateJointGeometry(kinematics.diagram.joints[3]->pos, std::min(kinematics.diagram.links[1]->z, kinematics.diagram.links[2]->z), std::max(kinematics.diagram.links[1]->z, kinematics.diagram.links[2]->z), glm::vec4(0.7, 1, 0.7, 1), vertices);
 
-		// generate geometry of joints [2] and [5]
+		// generate geometry of joint [6], which is between two ternary links
+		generateJointGeometry(kinematics.diagram.joints[6]->pos, std::min(kinematics.diagram.links[3]->z, kinematics.diagram.links[4]->z), std::max(kinematics.diagram.links[3]->z, kinematics.diagram.links[4]->z), glm::vec4(0.7, 1, 0.7, 1), vertices);
+
+		// generate geometry of joints [2], [5], [4], [7]
 		// Temporarly implementation
 		// We should use the z data from diagmra.connectors
 		std::vector<int> zs2 = { kinematics.diagram.connectors[2].z, kinematics.diagram.links[0]->z, kinematics.diagram.links[2]->z };
@@ -1061,6 +1076,16 @@ namespace kinematics {
 		std::sort(zs5.begin(), zs5.end());
 		generateJointGeometry(kinematics.diagram.joints[5]->pos, zs5[1], zs5[2], glm::vec4(0.7, 1, 0.7, 1), vertices);
 		generateJointGeometry(kinematics.diagram.joints[5]->pos, zs5[1], zs5[0], glm::vec4(0.7, 1, 0.7, 1), vertices);
+
+		std::vector<int> zs4 = { kinematics.diagram.connectors[4].z, kinematics.diagram.links[1]->z, kinematics.diagram.links[3]->z };
+		std::sort(zs4.begin(), zs4.end());
+		generateJointGeometry(kinematics.diagram.joints[4]->pos, zs4[1], zs4[2], glm::vec4(0.7, 1, 0.7, 1), vertices);
+		generateJointGeometry(kinematics.diagram.joints[4]->pos, zs4[1], zs4[0], glm::vec4(0.7, 1, 0.7, 1), vertices);
+
+		std::vector<int> zs7 = { kinematics.diagram.connectors[5].z, kinematics.diagram.links[3]->z, kinematics.diagram.links[5]->z };
+		std::sort(zs7.begin(), zs7.end());
+		generateJointGeometry(kinematics.diagram.joints[7]->pos, zs7[1], zs7[2], glm::vec4(0.7, 1, 0.7, 1), vertices);
+		generateJointGeometry(kinematics.diagram.joints[7]->pos, zs7[1], zs7[0], glm::vec4(0.7, 1, 0.7, 1), vertices);
 	}
 
 	void LinkageSynthesisWattI::generateJointGeometry(const glm::dvec2& pos, int bottom_z, int top_z, const glm::vec4& color, std::vector<Vertex>& vertices) {
