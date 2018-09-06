@@ -101,7 +101,7 @@
       <OutputFile>$(OutDir)\$(ProjectName).exe</OutputFile>
       <AdditionalLibraryDirectories>$(QTDIR)\lib;..\opencv\lib;..\glew;$(CGAL_DIR)\lib;$(CGAL_DIR)\auxiliary\gmp\lib;$(BOOST_LIBRARYDIR);..\dlib\lib;C:\Gecode\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>qtmaind.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5OpenGLd.lib;opengl32.lib;glu32.lib;Qt5Widgetsd.lib;Qt5Xmld.lib;opencv_world300d.lib;glew32.lib;CGAL-vc120-mt-gd-4.8.1.lib;CGAL_Core-vc120-mt-gd-4.8.1.lib;CGAL_ImageIO-vc120-mt-gd-4.8.1.lib;libgmp-10.lib;libmpfr-4.lib;libboost_thread-vc120-mt-gd-1_58.lib;dlibd.lib;GecodeSupport-5-1-0-d-x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>qtmaind.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5OpenGLd.lib;opengl32.lib;glu32.lib;Qt5Widgetsd.lib;Qt5Xmld.lib;opencv_world300d.lib;glew32.lib;CGAL-vc120-mt-gd-4.10.1.lib;CGAL_Core-vc120-mt-gd-4.10.1.lib;CGAL_ImageIO-vc120-mt-gd-4.10.1.lib;libgmp-10.lib;libmpfr-4.lib;libboost_thread-vc120-mt-gd-1_58.lib;dlibd.lib;GecodeSupport-5-1-0-d-x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
