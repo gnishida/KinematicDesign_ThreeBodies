@@ -14,7 +14,7 @@
 
 namespace kinematics {
 
-	LinkageSynthesisWattI::LinkageSynthesisWattI(const std::vector<Object25D>& fixed_bodies, const std::vector<std::pair<double, double>>& sigmas, bool avoid_branch_defect, double min_transmission_angle, double min_link_length, const std::vector<double>& weights) {
+	LinkageSynthesisWattI::LinkageSynthesisWattI(const std::vector<Object25D>& fixed_bodies, const std::pair<double, double>& sigmas, bool avoid_branch_defect, double min_transmission_angle, double min_link_length, const std::vector<double>& weights) {
 		this->fixed_bodies = fixed_bodies;
 		this->sigmas = sigmas;
 		this->avoid_branch_defect = avoid_branch_defect;
