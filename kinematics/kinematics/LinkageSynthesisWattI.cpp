@@ -189,7 +189,7 @@ namespace kinematics {
 		}
 
 		try {
-			find_min(dlib::bfgs_search_strategy(), dlib::objective_delta_stop_strategy(1e-1), SolverForWattI(poses), SolverDerivForWattI(poses), starting_point, -1);
+			find_min(dlib::bfgs_search_strategy(), dlib::objective_delta_stop_strategy(1e-5), SolverForWattI(poses), SolverDerivForWattI(poses), starting_point, -1);
 			for (int i = 0; i < points.size(); i++) {
 				points[i] = glm::dvec2(starting_point(i * 2, 0), starting_point(i * 2 + 1, 0));
 			}
