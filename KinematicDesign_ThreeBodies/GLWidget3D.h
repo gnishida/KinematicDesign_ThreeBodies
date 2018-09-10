@@ -57,10 +57,15 @@ public:
 
 	std::vector<kinematics::Kinematics> kinematics;
 	kinematics::Solution selected_solution; // currently selected solution
+	std::vector<kinematics::Solution> initial_solutions;
 	std::vector<kinematics::Solution> solutions;
 	std::pair<int, int> selectedJoint;
+	std::vector<std::vector<glm::dmat3x3>> poses;
 	std::vector<kinematics::Object25D> fixed_bodies;
+	std::vector<kinematics::Object25D> merged_fixed_bodies;
 	std::vector<kinematics::Object25D> moving_bodies;
+	std::vector<std::vector<glm::dvec2>> linkage_region_pts;
+	std::vector<std::vector<glm::dvec2>> linkage_avoidance_pts;
 	int linkage_type;
 	QTimer* animation_timer;
 	bool collision_check;
@@ -68,6 +73,17 @@ public:
 	bool show_solutions;
 	bool show_grid_lines;
 	bool show_input_poses;
+
+	// parameters for sampling and particle filter
+	int num_samples;
+	double stddev_position;
+	double stddev_orientation;
+	bool avoid_branch_defect;
+	double min_transmission_angle;
+	std::vector<double> weights;
+	int num_particles;
+	int num_pf_iterations;
+	bool record_pf;
 
 public:
 	GLWidget3D(MainWindow *parent = 0);
@@ -98,7 +114,8 @@ public:
 	double scale();
 	void update3DGeometry();
 	void update3DGeometryFromKinematics();
-	void calculateSolutions(int linkae_type, int num_samples, std::pair<double, double>& sigmas, bool avoid_branch_defect, double min_transmission_angle, const std::vector<double>& weights, int num_particles, int num_iterations, bool record_file);
+	void calculateSolutions(int linkae_type);
+	void updateSolutions(int linkae_type);
 	void constructKinematics();
 	int findSolution(const std::vector<kinematics::Solution>& solutions, const glm::dvec2& pt, int joint_id);
 	void run();

@@ -1,6 +1,6 @@
 #include "MainWindow.h"
 #include <QFileDialog>
-#include "LinkageSynthesisOptionDialog.h"
+#include "SynthesisSettingsDialog.h"
 #include "OptionDialog.h"
 #include <QDateTime>
 #include <QMessageBox>
@@ -10,6 +10,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 
 	glWidget = new GLWidget3D(this);
 	setCentralWidget(glWidget);
+
+	// setup the docking widgets
+	weightWidget = new LinkageSynthesisWeightWidget(this, glWidget->weights);
+	weightWidget->show();
+	addDockWidget(Qt::LeftDockWidgetArea, weightWidget);
 
 	ui.actionCollisionCheck->setChecked(glWidget->collision_check);
 	ui.actionShowSolutions->setChecked(glWidget->show_solutions);
@@ -66,6 +71,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 	connect(ui.actionInsertLayer, SIGNAL(triggered()), this, SLOT(onInsertLayer()));
 	connect(ui.actionDeleteLayer, SIGNAL(triggered()), this, SLOT(onDeleteLayer()));
 	connect(ui.actionGenerateLinkage, SIGNAL(triggered()), this, SLOT(onGenerateLinkage()));
+	connect(ui.actionSynthesisSettings, SIGNAL(triggered()), this, SLOT(onSynthesisSettings()));
+	connect(ui.actionWeightsWindow, SIGNAL(triggered()), this, SLOT(onWeightsWindow()));
 	connect(ui.actionRun, SIGNAL(triggered()), this, SLOT(onRun()));
 	connect(ui.actionRunBackward, SIGNAL(triggered()), this, SLOT(onRunBackward()));
 	connect(ui.actionStop, SIGNAL(triggered()), this, SLOT(onStop()));
@@ -288,39 +295,33 @@ void MainWindow::onLayerChanged() {
 }
 
 void MainWindow::onGenerateLinkage() {
-	LinkageSynthesisOptionDialog dlg;
+	glWidget->calculateSolutions(GLWidget3D::LINKAGE_WATTI);
+}
+
+void MainWindow::onSynthesisSettings() {
+	SynthesisSettingsDialog dlg;
+	dlg.setNumSamples(glWidget->num_samples);
+	dlg.setStdDevPosition(glWidget->stddev_position);
+	dlg.setStdDevOrientation(glWidget->stddev_orientation);
+	dlg.setAvoidBranchDefect(glWidget->avoid_branch_defect);
+	dlg.setMinTransmissionAngle(glWidget->min_transmission_angle);
+	dlg.setNumParticles(glWidget->num_particles);
+	dlg.setNumIterations(glWidget->num_pf_iterations);
+	dlg.setRecordFile(glWidget->record_pf);
 	if (dlg.exec()) {
-		int linkage_type = 0;
-		if (dlg.ui.checkBox4RLinkage->isChecked()) linkage_type |= 1;
-		if (dlg.ui.checkBoxSliderCrank->isChecked()) linkage_type |= 2;
-		if (linkage_type == 0) {
-			QMessageBox msg(this);
-			msg.setWindowTitle("Error");
-			msg.setText("Please select at least one linkage type.");
-			msg.exec();
-			return;
-		}
-
-		std::pair<double, double> sigmas = { std::make_pair(dlg.ui.lineEditStdDevPosition->text().toDouble(), dlg.ui.lineEditStdDevOrientation->text().toDouble()) };
-
-		std::vector<double> weights = {
-			dlg.ui.lineEditPositionErrorWeight->text().toDouble(),
-			dlg.ui.lineEditLinkageLocationWeight->text().toDouble(),
-			dlg.ui.lineEditTrajectoryWeight->text().toDouble(),
-			dlg.ui.lineEditSizeWeight->text().toDouble(),
-			dlg.ui.lineEditLinkageDepthWeight->text().toDouble()
-		};
-
-		glWidget->calculateSolutions(GLWidget3D::LINKAGE_WATTI,
-			dlg.ui.lineEditNumSamples->text().toInt(),
-			sigmas,
-			dlg.ui.checkBoxAvoidBranchDefect->isChecked(),
-			dlg.ui.lineEditMinTransmissionAngle->text().toDouble(),
-			weights,
-			dlg.ui.lineEditNumParticles->text().toInt(),
-			dlg.ui.lineEditNumIterations->text().toInt(),
-			dlg.ui.checkBoxRecordFile->isChecked());
+		glWidget->num_samples = dlg.getNumSamples();
+		glWidget->stddev_position = dlg.getStdDevPosition();
+		glWidget->stddev_orientation = dlg.getStdDevOrientation();
+		glWidget->avoid_branch_defect = dlg.getAvoidBranchDefect();
+		glWidget->min_transmission_angle = dlg.getMinTransmissionAngle();
+		glWidget->num_particles = dlg.getNumParticles();
+		glWidget->num_pf_iterations = dlg.getNumIterations();
+		glWidget->record_pf = dlg.getRecordFile();
 	}
+}
+
+void MainWindow::onWeightsWindow() {
+	weightWidget->show();
 }
 
 void MainWindow::onRun() {

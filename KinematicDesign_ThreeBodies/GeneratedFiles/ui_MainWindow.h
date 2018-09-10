@@ -73,6 +73,8 @@ public:
     QAction *actionShowInputPoses;
     QAction *actionSaveImage;
     QAction *actionRestrictMotionRange;
+    QAction *actionSynthesisSettings;
+    QAction *actionWeightsWindow;
     QWidget *centralWidget;
     QMenuBar *menuBar;
     QMenu *menuFile;
@@ -91,7 +93,7 @@ public:
     {
         if (MainWindowClass->objectName().isEmpty())
             MainWindowClass->setObjectName(QStringLiteral("MainWindowClass"));
-        MainWindowClass->resize(800, 853);
+        MainWindowClass->resize(984, 853);
         actionExit = new QAction(MainWindowClass);
         actionExit->setObjectName(QStringLiteral("actionExit"));
         actionSelect = new QAction(MainWindowClass);
@@ -283,12 +285,16 @@ public:
         actionRestrictMotionRange->setObjectName(QStringLiteral("actionRestrictMotionRange"));
         actionRestrictMotionRange->setCheckable(true);
         actionRestrictMotionRange->setChecked(true);
+        actionSynthesisSettings = new QAction(MainWindowClass);
+        actionSynthesisSettings->setObjectName(QStringLiteral("actionSynthesisSettings"));
+        actionWeightsWindow = new QAction(MainWindowClass);
+        actionWeightsWindow->setObjectName(QStringLiteral("actionWeightsWindow"));
         centralWidget = new QWidget(MainWindowClass);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         MainWindowClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindowClass);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 800, 21));
+        menuBar->setGeometry(QRect(0, 0, 984, 21));
         menuFile = new QMenu(menuBar);
         menuFile->setObjectName(QStringLiteral("menuFile"));
         menuExport = new QMenu(menuFile);
@@ -362,6 +368,8 @@ public:
         menuLayer->addAction(actionDeleteLayer);
         menuLayer->addSeparator();
         menuKinematics->addAction(actionGenerateLinkage);
+        menuKinematics->addAction(actionSynthesisSettings);
+        menuKinematics->addAction(actionWeightsWindow);
         menuKinematics->addSeparator();
         menuKinematics->addAction(actionRun);
         menuKinematics->addAction(actionRunBackward);
@@ -449,6 +457,8 @@ public:
         actionSaveImage->setText(QApplication::translate("MainWindowClass", "Save Image", 0));
         actionSaveImage->setShortcut(QApplication::translate("MainWindowClass", "Ctrl+P", 0));
         actionRestrictMotionRange->setText(QApplication::translate("MainWindowClass", "Restrict Motion Range", 0));
+        actionSynthesisSettings->setText(QApplication::translate("MainWindowClass", "Synthesis Settings", 0));
+        actionWeightsWindow->setText(QApplication::translate("MainWindowClass", "Weights Window", 0));
         menuFile->setTitle(QApplication::translate("MainWindowClass", "File", 0));
         menuExport->setTitle(QApplication::translate("MainWindowClass", "Export", 0));
         menuMode->setTitle(QApplication::translate("MainWindowClass", "Mode", 0));

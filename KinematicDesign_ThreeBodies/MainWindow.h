@@ -4,6 +4,8 @@
 #include <QtWidgets/QMainWindow>
 #include "ui_MainWindow.h"
 #include "GLWidget3D.h"
+#include "LinkageSynthesisWeightWidget.h"
+#include <vector>
 
 class MainWindow : public QMainWindow {
 	Q_OBJECT
@@ -14,6 +16,7 @@ public:
 	QActionGroup* groupLayer;
 	QActionGroup* groupRender;
 	GLWidget3D* glWidget;
+	LinkageSynthesisWeightWidget* weightWidget;
 
 public:
 	MainWindow(QWidget *parent = 0);
@@ -44,6 +47,8 @@ public slots:
 	void onDeleteLayer();
 	void onLayerChanged();
 	void onGenerateLinkage();
+	void onSynthesisSettings();
+	void onWeightsWindow();
 	void onRun();
 	void onRunBackward();
 	void onStop();
