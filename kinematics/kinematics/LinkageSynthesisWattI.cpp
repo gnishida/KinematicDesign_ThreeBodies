@@ -147,11 +147,11 @@ namespace kinematics {
 				points[9] = glm::dvec2(-42.3571, 23.5452);
 			}
 
-			if (!optimizeCandidate(perturbed_poses, linkage_region_pts, bbox, points)) continue;
+			if (!optimizeCandidate(perturbed_poses, points)) continue;
 
 			// check hard constraints
 			std::vector<std::vector<int>> zorder;
-			if (!checkHardConstraints(points, perturbed_poses, linkage_region_pts, linkage_avoidance_pts, moving_bodies, zorder, 0.06)) continue;
+			if (!checkHardConstraints(points, perturbed_poses, moving_bodies, zorder, 0.06)) continue;
 			
 			solutions.push_back(Solution(0, points, position_error, orientation_error, perturbed_poses, zorder));
 			cnt++;
@@ -164,14 +164,9 @@ namespace kinematics {
 	* Optimize the linkage parameters based on the rigidity constraints.
 	* If it fails to optimize, return false.
 	*/
-	bool LinkageSynthesisWattI::optimizeCandidate(const std::vector<std::vector<glm::dmat3x3>>& poses, const std::vector<glm::dvec2>& linkage_region_pts, const BBox& bbox, std::vector<glm::dvec2>& points) {
-		if (!optimizeLink(poses, linkage_region_pts, bbox, points)) return false;
+	bool LinkageSynthesisWattI::optimizeCandidate(const std::vector<std::vector<glm::dmat3x3>>& poses, std::vector<glm::dvec2>& points) {
+		if (!optimizeLink(poses, points)) return false;
 		if (check(poses, points) > 0.1) return false;
-
-		// Check if all the joints are within the linkage region
-		for (int i = 0; i < points.size(); i++) {
-			if (!withinPolygon(linkage_region_pts, points[i])) return false;
-		}
 
 		return true;
 	}
@@ -180,7 +175,7 @@ namespace kinematics {
 	 * @param linkage_region_pts_local	linkage region in the local coordinate system of moving objects (i = 0, 1)
 	 * @param bbox_local				bounding box in the local coordinate system of moving objects (i = 0, 1)
 	 */
-	bool LinkageSynthesisWattI::optimizeLink(const std::vector<std::vector<glm::dmat3x3>>& poses, const std::vector<glm::dvec2>& linkage_region_pts, const BBox& bbox, std::vector<glm::dvec2>& points) {
+	bool LinkageSynthesisWattI::optimizeLink(const std::vector<std::vector<glm::dmat3x3>>& poses, std::vector<glm::dvec2>& points) {
 		// setup the initial parameters for optimization
 		column_vector starting_point(points.size() * 2);
 		for (int i = 0; i < points.size(); i++) {
@@ -201,10 +196,10 @@ namespace kinematics {
 		return true;
 	}
 
-	Solution LinkageSynthesisWattI::findBestSolution(const std::vector<std::vector<glm::dmat3x3>>& poses, std::vector<Solution>& solutions, const std::vector<glm::dvec2>& linkage_region_pts, const cv::Mat& dist_map, const BBox& dist_map_bbox, const std::vector<glm::dvec2>& linkage_avoidance_pts, const std::vector<Object25D>& moving_bodies, int num_particles, int num_iterations, bool record_file) {
+	Solution LinkageSynthesisWattI::findBestSolution(const std::vector<std::vector<glm::dmat3x3>>& poses, std::vector<Solution>& solutions, const cv::Mat& dist_map, const BBox& dist_map_bbox, const std::vector<Object25D>& moving_bodies, int num_particles, int num_iterations, bool record_file) {
 		// select the best solution based on the trajectory
 		if (solutions.size() > 0) {
-			particleFilter(solutions, linkage_region_pts, dist_map, dist_map_bbox, linkage_avoidance_pts, moving_bodies, num_particles, num_iterations, record_file);
+			particleFilter(solutions, dist_map, dist_map_bbox, moving_bodies, num_particles, num_iterations, record_file);
 			return solutions[0];
 		}
 		else {
@@ -606,7 +601,7 @@ namespace kinematics {
 		kin.diagram.addBody(kin.diagram.joints[8], kin.diagram.joints[9], moving_bodies[2]);
 	}
 
-	bool LinkageSynthesisWattI::checkHardConstraints(std::vector<glm::dvec2>& points, const std::vector<std::vector<glm::dmat3x3>>& poses, const std::vector<glm::dvec2>& linkage_region_pts, const std::vector<glm::dvec2>& linkage_avoidance_pts, const std::vector<Object25D>& moving_bodies, std::vector<std::vector<int>>& zorder, double simulation_speed) {
+	bool LinkageSynthesisWattI::checkHardConstraints(std::vector<glm::dvec2>& points, const std::vector<std::vector<glm::dmat3x3>>& poses, const std::vector<Object25D>& moving_bodies, std::vector<std::vector<int>>& zorder, double simulation_speed) {
 		if (glm::length(points[0] - points[1]) < min_link_length) return false;
 		if (glm::length(points[2] - points[3]) < min_link_length) return false;
 
@@ -614,8 +609,6 @@ namespace kinematics {
 		if (avoid_branch_defect && checkBranchDefect(poses, points)) return false;
 		if (checkCircuitDefect(poses, points)) return false;
 		//if (checkOrderDefect(poses, points)) return false;
-
-		if (!withinLinkageRegion(points, poses, fixed_bodies, moving_bodies, linkage_region_pts)) return false;
 
 		// collision check
 		if (checkCollision(poses, points, fixed_bodies, moving_bodies, simulation_speed)) return false;
