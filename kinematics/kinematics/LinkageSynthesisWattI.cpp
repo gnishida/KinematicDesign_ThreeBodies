@@ -185,12 +185,11 @@ namespace kinematics {
 		return true;
 	}
 
-	Solution LinkageSynthesisWattI::findBestSolution(const std::vector<std::vector<glm::dmat3x3>>& poses, const std::vector<Solution>& solutions, const cv::Mat& dist_map, const BBox& dist_map_bbox, const std::vector<Object25D>& moving_bodies, int num_particles, int num_iterations, bool record_file) {
+	Solution LinkageSynthesisWattI::findBestSolution(const std::vector<std::vector<glm::dmat3x3>>& poses, std::vector<Solution>& solutions, const cv::Mat& dist_map, const BBox& dist_map_bbox, const std::vector<Object25D>& moving_bodies, int num_particles, int num_iterations, bool record_file) {
 		// select the best solution based on the trajectory
 		if (solutions.size() > 0) {
-			std::vector<Solution> particles = solutions;
-			particleFilter(particles, dist_map, dist_map_bbox, moving_bodies, num_particles, num_iterations, record_file);
-			return particles[0];
+			particleFilter(solutions, dist_map, dist_map_bbox, moving_bodies, num_particles, num_iterations, record_file);
+			return solutions[0];
 		}
 		else {
 			return Solution(0, { { 0, 0 }, { 2, 0 }, { 0, 2 }, { 2, 2 }, { 1, 3 }, { 3, 3 }, { 3, 5 }, { 5, 7 }, { 6, 8 }, { 8, 10 } }, 0, 0, poses);
