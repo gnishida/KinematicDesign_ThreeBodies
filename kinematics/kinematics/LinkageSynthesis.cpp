@@ -104,13 +104,7 @@ namespace kinematics {
 		std::vector<Solution> particles(std::max((int)solutions.size(), num_particles));
 		double max_cost = 0;
 
-		/*
-		for (int i = 0; i < solutions.size(); i++) {
-			double cost = calculateCost(solutions[i], moving_body, dist_map, dist_map_bbox);
-			max_cost = std::max(max_cost, cost);
-			particles[i] = Particle(cost, solutions[i]);
-		}
-		*/
+		srand(0);
 
 		// augment
 		for (int i = 0; i < particles.size(); i++) {
@@ -138,6 +132,8 @@ namespace kinematics {
 			calculateStatistics(values, mean_val, sd_val);
 			(*out) << mean_val << "," << sd_val << "\n";
 		}
+		
+		double perturb_size = 1;
 
 		// particle filter
 		for (int iter = 0; iter < num_iterations; iter++) {
@@ -146,8 +142,8 @@ namespace kinematics {
 			for (int i = 0; i < new_particles.size(); i++) {
 				// pertube the joints
 				for (int j = 0; j < new_particles[i].points.size(); j++) {
-					new_particles[i].points[j].x += genRand(-1, 1);
-					new_particles[i].points[j].y += genRand(-1, 1);
+					new_particles[i].points[j].x += genRand(-perturb_size, perturb_size);
+					new_particles[i].points[j].y += genRand(-perturb_size, perturb_size);
 				}
 
 				if (optimizeCandidate(new_particles[i].poses, new_particles[i].points)) {
