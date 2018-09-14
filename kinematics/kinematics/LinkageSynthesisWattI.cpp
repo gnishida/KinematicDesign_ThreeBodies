@@ -888,39 +888,6 @@ namespace kinematics {
 		return kinematics;
 	}
 
-	bool LinkageSynthesisWattI::withinLinkageRegion(std::vector<glm::dvec2>& points, const std::vector<std::vector<glm::dmat3x3>>& poses, const std::vector<Object25D>& fixed_bodies, const std::vector<Object25D>& moving_bodies, const std::vector<glm::dvec2>& linkage_region_pts) {
-		std::vector<glm::dvec2> connector_pts;
-		kinematics::Kinematics kinematics = constructKinematics(poses, points, {}, moving_bodies, true, fixed_bodies, connector_pts);
-		kinematics.diagram.initialize();
-
-		if (!withinPolygon(linkage_region_pts, (points[0] + points[2]) * 0.5)) return false;
-		if (!withinPolygon(linkage_region_pts, (points[1] + points[3]) * 0.5)) return false;
-		if (!withinPolygon(linkage_region_pts, (points[1] + points[4]) * 0.5)) return false;
-		if (!withinPolygon(linkage_region_pts, (points[2] + points[3]) * 0.5)) return false;
-		if (!withinPolygon(linkage_region_pts, (points[2] + points[5]) * 0.5)) return false;
-		if (!withinPolygon(linkage_region_pts, (points[3] + points[4]) * 0.5)) return false;
-		if (!withinPolygon(linkage_region_pts, (points[3] + points[5]) * 0.5)) return false;
-		if (!withinPolygon(linkage_region_pts, (points[4] + points[6]) * 0.5)) return false;
-		if (!withinPolygon(linkage_region_pts, (points[4] + points[7]) * 0.5)) return false;
-		if (!withinPolygon(linkage_region_pts, (points[5] + points[6]) * 0.5)) return false;
-		if (!withinPolygon(linkage_region_pts, (points[5] + points[8]) * 0.5)) return false;
-		if (!withinPolygon(linkage_region_pts, (points[6] + points[7]) * 0.5)) return false;
-		if (!withinPolygon(linkage_region_pts, (points[6] + points[8]) * 0.5)) return false;
-		if (!withinPolygon(linkage_region_pts, (points[7] + points[9]) * 0.5)) return false;
-		if (!withinPolygon(linkage_region_pts, (points[8] + points[9]) * 0.5)) return false;
-
-		if (!withinPolygon(linkage_region_pts, (points[0] + connector_pts[0]) * 0.5)) return false;
-		if (!withinPolygon(linkage_region_pts, (points[1] + connector_pts[1]) * 0.5)) return false;
-		if (!withinPolygon(linkage_region_pts, (points[2] + connector_pts[2]) * 0.5)) return false;
-		if (!withinPolygon(linkage_region_pts, (points[5] + connector_pts[3]) * 0.5)) return false;
-		if (!withinPolygon(linkage_region_pts, (points[4] + connector_pts[4]) * 0.5)) return false;
-		if (!withinPolygon(linkage_region_pts, (points[7] + connector_pts[5]) * 0.5)) return false;
-		if (!withinPolygon(linkage_region_pts, (points[8] + connector_pts[6]) * 0.5)) return false;
-		if (!withinPolygon(linkage_region_pts, (points[9] + connector_pts[7]) * 0.5)) return false;
-
-		return true;
-	}
-
 	double LinkageSynthesisWattI::tortuosityOfTrajectory(const std::vector<std::vector<glm::dmat3x3>>& poses, const std::vector<glm::dvec2>& points, const std::vector<Object25D>& moving_bodies, double simulation_speed) {
 		// calculate the local coordinates of the body points
 		std::vector<std::vector<glm::dvec2>> body_pts_local(moving_bodies.size());
